@@ -37,7 +37,7 @@ requires = [
     "chex",
     "flax",
     "pyyaml",
-    "gym>=0.26",
+    "gym>=0.25",
     "gymnasium",
     "matplotlib",
     "seaborn",
