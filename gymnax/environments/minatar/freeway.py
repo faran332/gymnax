@@ -16,7 +16,7 @@ ENVIRONMENT DESCRIPTION - 'Freeway-MinAtar'
 - Termination occurs after 2500 frames.
 - Channels are encoded as follows: 'chicken':0, 'car':1, 'speed1':2,
 - 'speed2':3, 'speed3':4, 'speed4':5, 'speed5':6
-- Observation has dimensionality (10, 10, 4)
+- Observation has dimensionality (10, 10, 7)
 - Actions are encoded as follows: ['n', 'u', 'd']
 """
 
@@ -95,7 +95,7 @@ class MinFreeway(environment.Environment[EnvState, EnvParams]):
 
         # Check game condition & no. steps for termination condition
         state = state.replace(time=state.time + 1)
-        done = self.is_terminal(state, params)
+        truncated, done = self.is_terminal(state, params)
         state = state.replace(terminal=done)
         info = {"discount": self.discount(state, params)}
         return (
@@ -103,7 +103,7 @@ class MinFreeway(environment.Environment[EnvState, EnvParams]):
             lax.stop_gradient(state),
             reward.astype(jnp.float32),
             done,
-            info,
+            truncated,
         )
 
     def reset_env(
@@ -151,7 +151,7 @@ class MinFreeway(environment.Environment[EnvState, EnvParams]):
     def is_terminal(self, state: EnvState, params: EnvParams) -> jnp.ndarray:
         """Check whether state is terminal."""
         done_steps = state.time >= params.max_steps_in_episode
-        return jnp.array(done_steps)
+        return done_steps, state.terminal
 
     @property
     def name(self) -> str:

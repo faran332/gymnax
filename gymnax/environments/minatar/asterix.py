@@ -112,14 +112,14 @@ class MinAsterix(environment.Environment[EnvState, EnvParams]):
 
         # Check game condition & no. steps for termination condition
         state = state.replace(time=state.time + 1, terminal=done)
-        done = self.is_terminal(state, params)
+        truncated, done = self.is_terminal(state, params)
         info = {"discount": self.discount(state, params)}
         return (
             lax.stop_gradient(self.get_obs(state)),
             lax.stop_gradient(state),
             reward.astype(jnp.float32),
             done,
-            info,
+            truncated,
         )
 
     def reset_env(
@@ -165,7 +165,7 @@ class MinAsterix(environment.Environment[EnvState, EnvParams]):
     def is_terminal(self, state: EnvState, params: EnvParams) -> jnp.ndarray:
         """Check whether state is terminal."""
         done_steps = state.time >= params.max_steps_in_episode
-        return jnp.logical_or(done_steps, state.terminal)
+        return done_steps, state.terminal
 
     @property
     def name(self) -> str:
