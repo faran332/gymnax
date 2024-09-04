@@ -129,7 +129,8 @@ class MinBreakout(environment.Environment[EnvState, EnvParams]):
     def is_terminal(self, state: EnvState, params: EnvParams) -> jnp.ndarray:
         """Check whether state is terminal. Return truncated and terminal"""
         done_steps = state.time >= params.max_steps_in_episode
-        return done_steps, state.terminal
+        done = jnp.logical_or(done_steps, state.terminal)
+        return done_steps, done
 
     @property
     def name(self) -> str:
