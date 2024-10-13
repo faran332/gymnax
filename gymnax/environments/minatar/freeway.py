@@ -97,7 +97,7 @@ class MinFreeway(environment.Environment[EnvState, EnvParams]):
         state = state.replace(time=state.time + 1)
         truncated, done = self.is_terminal(state, params)
         state = state.replace(terminal=done)
-        info = {"discount": self.discount(state, params)}
+        # info = {"discount": self.discount(state, params)}
         return (
             lax.stop_gradient(self.get_obs(state)),
             lax.stop_gradient(state),
